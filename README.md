@@ -22,11 +22,12 @@ mysql> show tables;
 mysql> describe activities 
     -> ; 
 +----------+---------------+------+-----+---------+-------+
-| Field    | Type          | Null | Key | Default | Extra |
+| Field             | Type          | Null | Key | Default | Extra |
 +----------+---------------+------+-----+---------+-------+
-| user     | varchar(100)  | YES  |     | NULL    |       |
-| date     | date          | YES  |     | NULL    |       |
-| activity | varchar(1000) | YES  |     | NULL    |       |
-| rank     | tinyint(4)    | YES  |     | NULL    |       |
+| user              | varchar(100)  | YES  |     | NULL    |       |
+| date              | datetime      | YES  |     | NULL    |       |
+| activity_category |varchar(1000)  | YES  |     | NULL    |       |
+| activity 	    | varchar(1000) | YES  |     | NULL    |       |
+| rank     	    | tinyint(4)    | YES  |     | NULL    |       |
 +----------+---------------+------+-----+---------+-------+
 4 rows in set (0.00 sec)
