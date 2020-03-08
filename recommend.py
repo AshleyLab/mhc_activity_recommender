@@ -1,7 +1,11 @@
 import argparse
+from collections import OrderedDict 
 from utils import *
 from feature_matcher import * 
 from datetime import datetime
+import pandas as pd
+import random 
+import pdb
 
 def parse_args(): 
     parser=argparse.ArgumentParser(description="recommend activity") 
@@ -17,17 +21,45 @@ def generate_recommendation(sql_cursor,sql_db,args):
     '''
     generate an activity recommendation 
     '''
-    activity_options=pd.read_csv(metadata[args.activity_category],header=True,sep='\t')
+    activity_options=pd.read_csv(metadata[args.activity_category],header=0,sep='\t')
     features=pd.read_csv(args.feature_ranks,header=None,sep='\t')
-    assert features[2].min>=0
-    assert features[2].max<=10
-    
-    features=features.sort_values(by=2,reverse=True)
-    print(features)
-    options=OrderedDict
-    
 
-def make_output(activity,sql_cursor,sql_db,args):
+    assert features[2].min()>=0
+    assert features[2].max()<=10
+    
+    #features=features.sort_values(by=2,ascending=False)
+    print(features)
+    
+    options=dict()
+    #each activity gets a base count of 1
+    activities=activity_options['Activity'].tolist()
+    for activity in activities:
+        options[activity]=1
+        
+    for index,row in features.iterrows():
+        cur_feature=row[0]
+        cur_feature_value=row[1]
+        cur_feature_importance=row[2]
+        hits=matchers[cur_features](cur_feature_value,cur_feature_importance,features)
+        for hit in hits:
+            options[hit]+=cur_feature_importance
+            
+    #rank options by those with highest hits 
+    ranked_options=sorted(options.items(),key=lambda x: x[1], reverse=True)
+    max_score=ranked_options[0][1]
+    recommended_activities=[ranked_options[0][0]] 
+    for i in range(1,len(ranked_options)):
+        cur_score=ranked_options[i][1]
+        if cur_score < max_score:
+            break
+        else:
+            recommended_activities.append(ranked_options[i][0])
+
+    #randomly select an activity
+    selected_activity=random.choice(recommended_activities)
+    return selected_activity,recommended_activities 
+
+def make_output(activity,choices,sql_cursor,sql_db,args):
     '''
     populate database with activity selection string 
     return activity selection string 
@@ -44,10 +76,14 @@ def make_output(activity,sql_cursor,sql_db,args):
     sql_db.commit() 
     
     if args.outf is None:
-        print(str(activity))
+        print('specified category':+args.activity_category)
+        print('selected activity:'+str(activity))
+        print('options:'+str(choices))
     else:
         outf=open(args.outf,'w')
-        outf.write(activity)
+        outf.write('specified category':+args.activity_category+'\n')
+        outf.write('selected activity:'+activity+'\n')
+        outf.write('options:'+'\t'.join(choices)+'\n')
         outf.close()
        
 def main():
@@ -59,11 +95,11 @@ def main():
 
     if args.activity_category=="skip":
         #user selected to skip exercise
-        make_output('skip',sql_cursor,sql_db, args)
+        make_output('skip','skip',sql_cursor,sql_db, args)
     else:
         #recommend an exercise
-        recommendation=generate_recommendation(sql_cursor,sql_db,args)
-        make_output(recommendation,sql_cursor,sqld_db, args)
+        recommendation,choices=generate_recommendation(sql_cursor,sql_db,args)
+        make_output(recommendation,choices,sql_cursor,sqld_db, args)
 
     #close mysql connection
     sql_db.close()
