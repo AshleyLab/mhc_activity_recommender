@@ -40,7 +40,7 @@ def generate_recommendation(sql_cursor,sql_db,args):
         cur_feature=row[0]
         cur_feature_value=row[1]
         cur_feature_importance=row[2]
-        hits=matchers[cur_features](cur_feature_value,cur_feature_importance,features)
+        hits=matchers[cur_feature](cur_feature_value,cur_feature_importance,features)
         for hit in hits:
             options[hit]+=cur_feature_importance
             
@@ -76,12 +76,12 @@ def make_output(activity,choices,sql_cursor,sql_db,args):
     sql_db.commit() 
     
     if args.outf is None:
-        print('specified category':+args.activity_category)
+        print('specified category:'+args.activity_category)
         print('selected activity:'+str(activity))
         print('options:'+str(choices))
     else:
         outf=open(args.outf,'w')
-        outf.write('specified category':+args.activity_category+'\n')
+        outf.write('specified category:'+args.activity_category+'\n')
         outf.write('selected activity:'+activity+'\n')
         outf.write('options:'+'\t'.join(choices)+'\n')
         outf.close()
@@ -99,9 +99,10 @@ def main():
     else:
         #recommend an exercise
         recommendation,choices=generate_recommendation(sql_cursor,sql_db,args)
-        make_output(recommendation,choices,sql_cursor,sqld_db, args)
+        make_output(recommendation,choices,sql_cursor,sql_db, args)
 
     #close mysql connection
+    sql_cursor.close()
     sql_db.close()
     
     

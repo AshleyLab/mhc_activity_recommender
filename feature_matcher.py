@@ -1,26 +1,26 @@
 def match_duration(desired_val, feat_importance, activities_df):
-    pass
+    return []
 
 def match_category(desired_val, feat_importance, activities_df):
-    pass
+    return []
 
 def match_intensity(desired_val, feat_importance, activities_df):
-    pass
+    return []
 
 def match_focus(desired_val, feat_importance, activties_df):
-    pass
+    return []
 
 def match_group_v_individual(desired_val, feat_importance, activities_df):
-    pass
+    return []
 
 def match_instructor_gender(desired_val, feat_importance, activities_df):
-    pass
+    return []
 
 def match_class_gender(desired_val, feat_importance, activities_df):
-    pass
+    return []
 
 def match_novelty(desired_val, feat_importance, activities_df):
-    pass
+    return []
 
 matchers={}
 matchers['Duration']=match_duration
