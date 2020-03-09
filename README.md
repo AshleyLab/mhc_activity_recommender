@@ -3,10 +3,12 @@ recommender system of activities for users in MHC 3.0 coaching studies
 
 Example:
 ```
-../recommend.sh 
+./recommend.sh 
 specified category:skip
 selected activity:skip
 options:skip
+
+---------------------------------------------------------
                   0         1   2
 0          Duration        30  10
 1          Category       Abs   9
@@ -27,17 +29,10 @@ selected activity metadata[array(['https://youtu.be/CBWQGb4LyAM', 30, 'Cardio & 
 options:['https://youtu.be/CBWQGb4LyAM']
 
 ```
+Example for rating an activity
 ```
 ./rate.sh 
 ('testuser', datetime.datetime(2020, 3, 7, 15, 21), 'skip', 'skip', 1)
-('testuser', datetime.datetime(2020, 3, 7, 15, 21), 'skip', 'skip', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
 ('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
 ```
 
