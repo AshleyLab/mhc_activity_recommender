@@ -89,13 +89,15 @@ def make_output(activity,activity_annotation,choices,sql_cursor,sql_db,args):
     if args.outf is None:
         print('specified category:'+args.activity_category)
         print('selected activity:'+str(activity))
-        print('selected activity metadata'+str([i for i in activity_annotation.values]))
+        if activity_annotation is not None: 
+            print('selected activity metadata'+str([i for i in activity_annotation.values]))
         print('options:'+str(choices))
     else:
         outf=open(args.outf,'w')
         outf.write('specified category:'+args.activity_category+'\n')
         outf.write('selected activity:'+activity+'\n')
-        outf.write('selected activity metadata:'+ str([i for i in activity_annotation.values])+'\n')
+        if activity_annotation is not None:
+            outf.write('selected activity metadata:'+ str([i for i in activity_annotation.values])+'\n')
         outf.write('options:'+'\t'.join(choices)+'\n')
         outf.close()
        
@@ -108,7 +110,7 @@ def main():
 
     if args.activity_category=="skip":
         #user selected to skip exercise
-        make_output('skip','skip',sql_cursor,sql_db, args)
+        make_output('skip',None,'skip',sql_cursor,sql_db, args)
     else:
         #recommend an exercise
         recommendation,recommendation_annotation, choices=generate_recommendation(sql_cursor,sql_db,args)
