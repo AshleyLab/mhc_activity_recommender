@@ -10,11 +10,12 @@ def match_continuous_feature(desired_val, feature, activities_df,cursor, user):
 
 def match_categorical_feature(desired_val, feature, activities_df,cursor, user):
     hits=[]
-    desired_val=desired_val.lower() 
+    desired_vals=desired_val.lower().split('/')  
     for index,row in activities_df.iterrows():
         cur_category=row[feature].lower()
-        if cur_category.__contains__(desired_val):
-            hits.append(row['Activity'])
+        for desired_val in desired_vals:
+            if cur_category.__contains__(desired_val):
+                hits.append(row['Activity'])
     return hits
 
 def match_novelty(desired_val, feature, activities_df, sql_cursor,user):

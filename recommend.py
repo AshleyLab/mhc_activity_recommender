@@ -27,7 +27,6 @@ def generate_recommendation(sql_cursor,sql_db,args):
     assert features[2].min()>=0
     assert features[2].max()<=10
     
-    #features=features.sort_values(by=2,ascending=False)
     print(features)
     
     options=dict()
@@ -43,7 +42,18 @@ def generate_recommendation(sql_cursor,sql_db,args):
         hits=matchers[cur_feature](cur_feature_value, cur_feature, activity_options, sql_cursor, args.user)
         for hit in hits:
             options[hit]+=cur_feature_importance
-            
+
+    #check user rankings of performed activities
+    sql="SELECT activity, rank from activities where user = %s and rank is not NULL" 
+    vals=(args.user,)
+    sql_cursor.execute(sql,vals)
+    result=[i for i in sql_cursor.fetchall()]
+    for entry in result:
+        rated_activity=entry[0]
+        rating=entry[1]
+        if rated_activity in options:
+            options[rated_activity]+=rating 
+                
     #rank options by those with highest hits 
     ranked_options=sorted(options.items(),key=lambda x: x[1], reverse=True)
     max_score=ranked_options[0][1]
@@ -57,9 +67,10 @@ def generate_recommendation(sql_cursor,sql_db,args):
 
     #randomly select an activity
     selected_activity=random.choice(recommended_activities)
-    return selected_activity,recommended_activities 
+    full_annotation=activity_options[activity_options['Activity']==selected_activity]
+    return selected_activity,full_annotation, recommended_activities 
 
-def make_output(activity,choices,sql_cursor,sql_db,args):
+def make_output(activity,activity_annotation,choices,sql_cursor,sql_db,args):
     '''
     populate database with activity selection string 
     return activity selection string 
@@ -78,11 +89,13 @@ def make_output(activity,choices,sql_cursor,sql_db,args):
     if args.outf is None:
         print('specified category:'+args.activity_category)
         print('selected activity:'+str(activity))
+        print('selected activity metadata'+str([i for i in activity_annotation.values]))
         print('options:'+str(choices))
     else:
         outf=open(args.outf,'w')
         outf.write('specified category:'+args.activity_category+'\n')
         outf.write('selected activity:'+activity+'\n')
+        outf.write('selected activity metadata:'+ str([i for i in activity_annotation.values])+'\n')
         outf.write('options:'+'\t'.join(choices)+'\n')
         outf.close()
        
@@ -98,8 +111,8 @@ def main():
         make_output('skip','skip',sql_cursor,sql_db, args)
     else:
         #recommend an exercise
-        recommendation,choices=generate_recommendation(sql_cursor,sql_db,args)
-        make_output(recommendation,choices,sql_cursor,sql_db, args)
+        recommendation,recommendation_annotation, choices=generate_recommendation(sql_cursor,sql_db,args)
+        make_output(recommendation,recommendation_annotation,choices,sql_cursor,sql_db, args)
 
     #close mysql connection
     sql_cursor.close()
