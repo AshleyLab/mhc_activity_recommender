@@ -40,7 +40,7 @@ def generate_recommendation(sql_cursor,sql_db,args):
         cur_feature=row[0]
         cur_feature_value=row[1]
         cur_feature_importance=row[2]
-        hits=matchers[cur_feature](cur_feature_value,cur_feature_importance,features)
+        hits=matchers[cur_feature](cur_feature_value, cur_feature, activity_options, sql_cursor, args.user)
         for hit in hits:
             options[hit]+=cur_feature_importance
             

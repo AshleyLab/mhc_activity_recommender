@@ -1,33 +1,41 @@
-def match_duration(desired_val, feat_importance, activities_df):
-    return []
+import pdb
+#how much variability in feature value is allowed for a 'match' on a continuous feature
+tolerances={}
+tolerances['Duration']=10
 
-def match_category(desired_val, feat_importance, activities_df):
-    return []
+def match_continuous_feature(desired_val, feature, activities_df,cursor, user):
+    desired_val=float(desired_val)
+    tolerance_val=tolerances[feature]
+    return activities_df[abs(activities_df[feature]-desired_val)<tolerance_val]['Activity'].tolist() 
 
-def match_intensity(desired_val, feat_importance, activities_df):
-    return []
+def match_categorical_feature(desired_val, feature, activities_df,cursor, user):
+    hits=[]
+    desired_val=desired_val.lower() 
+    for index,row in activities_df.iterrows():
+        cur_category=row[feature].lower()
+        if cur_category.__contains__(desired_val):
+            hits.append(row['Activity'])
+    return hits
 
-def match_focus(desired_val, feat_importance, activties_df):
-    return []
+def match_novelty(desired_val, feature, activities_df, sql_cursor,user):
+    hits=[]
+    sql="SELECT activity from activities where user = %s"
+    vals=(user,)
+    sql_cursor.execute(sql,vals)
+    seen=[i for i in sql_cursor.fetchall()]
+    for index,row in activities_df.iterrows():
+        cur_activity=row['Activity']
+        if cur_activity not in seen:
+            hits.append(cur_activity)
+    return hits
 
-def match_group_v_individual(desired_val, feat_importance, activities_df):
-    return []
-
-def match_instructor_gender(desired_val, feat_importance, activities_df):
-    return []
-
-def match_class_gender(desired_val, feat_importance, activities_df):
-    return []
-
-def match_novelty(desired_val, feat_importance, activities_df):
-    return []
 
 matchers={}
-matchers['Duration']=match_duration
-matchers['Category']=match_category
-matchers['Intensity']=match_intensity
-matchers['Focus']=match_focus
-matchers['GroupVIndividual']=match_group_v_individual
-matchers['InstructorGender']=match_instructor_gender
-matchers['ClassGender']=match_class_gender
+matchers['Duration']=match_continuous_feature
+matchers['Category']=match_categorical_feature
+matchers['Intensity']=match_categorical_feature
+matchers['Focus']=match_categorical_feature
+matchers['GroupVIndividual']=match_categorical_feature
+matchers['InstructorGender']=match_categorical_feature
+matchers['ClassGender']=match_categorical_feature
 matchers['Novelty']=match_novelty
