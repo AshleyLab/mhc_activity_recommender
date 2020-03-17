@@ -12,8 +12,11 @@ def parse_args():
     parser.add_argument("--user") 
     parser.add_argument("--date",default=None,help="format:2020-03-07 15:17:00") 
     parser.add_argument("--activity_category",choices=["lifestyle","training","video","skip"]) 
-    parser.add_argument("--feature_ranks",default=None, help="tsv file with feature name in column 1, feature value in column 2,  rank 0 to 10 in column 3")
+    parser.add_argument("--feature_ranks",default=None, help="tsv file with feature name in column 1, feature value in column 2,  rank 0 to 10 in column 3, or -1 to exclude")
     parser.add_argument("--outf",default=None,help="if None, print to console, else write string of recommended activities to a file")
+    parser.add_argument("--n",type=int,default=1,help="Number of activities to recommend")
+    parser.add_argument("--with_replacement",default=False,action="store_true",help="allow the same activitiy to be recommended multiple times")
+    parser.add_argument("--prob_duplicate",type=float,default=0.5,help="tune this parameter from 0 to 1 to control how many activities are reported multiple times; 0 = many repeats; 1 = no repeats")
     return parser.parse_args() 
 
 
@@ -24,25 +27,32 @@ def generate_recommendation(sql_cursor,sql_db,args):
     activity_options=pd.read_csv(metadata[args.activity_category],header=0,sep='\t')
     features=pd.read_csv(args.feature_ranks,header=None,sep='\t')
 
-    assert features[2].min()>=0
+    assert features[2].min()>=-1
     assert features[2].max()<=10
     
-    print(features)
+    #print(features)
     
     options=dict()
     #each activity gets a base count of 1
     activities=activity_options['Activity'].tolist()
     for activity in activities:
         options[activity]=1
-        
+
+    #activities that have features with negative weights are to be excluded
+    exclude={}
     for index,row in features.iterrows():
         cur_feature=row[0]
         cur_feature_value=row[1]
-        cur_feature_importance=row[2]
+        if str(cur_feature_value) =="nan":
+            continue 
+        cur_feature_importance=int(row[2])
         hits=matchers[cur_feature](cur_feature_value, cur_feature, activity_options, sql_cursor, args.user)
         for hit in hits:
-            options[hit]+=cur_feature_importance
-
+            if cur_feature_importance>0:
+                options[hit]+=cur_feature_importance
+            else:
+                exclude[hit]=1
+    
     #check user rankings of performed activities
     sql="SELECT activity, rank from activities where user = %s and rank is not NULL" 
     vals=(args.user,)
@@ -52,53 +62,75 @@ def generate_recommendation(sql_cursor,sql_db,args):
         rated_activity=entry[0]
         rating=entry[1]
         if rated_activity in options:
-            options[rated_activity]+=rating 
-                
-    #rank options by those with highest hits 
-    ranked_options=sorted(options.items(),key=lambda x: x[1], reverse=True)
-    max_score=ranked_options[0][1]
-    recommended_activities=[ranked_options[0][0]] 
-    for i in range(1,len(ranked_options)):
-        cur_score=ranked_options[i][1]
-        if cur_score < max_score:
-            break
+            options[rated_activity]+=rating
+            
+    #remove all excluded activities (i.e. activities with features that received negative scores)
+    for activity in exclude:
+        options.__delitem__(activity)
+
+
+    #create buckets of score --> activity
+    options_rev={}
+    for activity in options:
+        score=options[activity]
+        if score not in options_rev:
+            options_rev[score]=[activity]
         else:
-            recommended_activities.append(ranked_options[i][0])
+            options_rev[score].append(activity)
+    #rank options by those with highest hits 
+    ranked_options=sorted(options_rev.items(),key=lambda x: x[0], reverse=True)
+    #print(ranked_options) 
+    num_desired=args.n
+    num_selected=0
+    selected=[]
+    annotations=[]
+    cur_index=0
+    while cur_index < len(ranked_options): 
+        i=cur_index
+        cur_activities=ranked_options[i][1]
+        #shuffle in place
+        random.shuffle(cur_activities)
+        for activity in cur_activities: 
+            if num_selected < num_desired:
+                selected.append(activity)
+                num_selected+=1
+            else:
+                break
+        if num_selected==num_desired:
+            break
+        if args.with_replacement is True:
+            if random.random() < args.prob_duplicate: 
+                cur_index+=1
+        else:
+            cur_index+=1
+    return selected
 
-    #randomly select an activity
-    selected_activity=random.choice(recommended_activities)
-    full_annotation=activity_options[activity_options['Activity']==selected_activity]
-    return selected_activity,full_annotation, recommended_activities 
-
-def make_output(activity,activity_annotation,choices,sql_cursor,sql_db,args):
+def make_output(activities,sql_cursor,sql_db,args):
     '''
     populate database with activity selection string 
     return activity selection string 
     '''
     #write activity entry to db
-    sql="INSERT INTO activities (user, date, activity_category, activity) VALUES (%s, %s, %s, %s)"
-    if args.date is None:
-        cur_datetime=datetime.now()
-    else:
-        cur_datetime=datetime.strptime(args.date,'%Y-%m-%d %H:%M:%S')
+    for activity in activities:
+        sql="INSERT INTO activities (user, date, activity_category, activity) VALUES (%s, %s, %s, %s)"
+        if args.date is None:
+            cur_datetime=datetime.now()
+        else:
+            cur_datetime=datetime.strptime(args.date,'%Y-%m-%d %H:%M:%S')
         
-    vals=(args.user, cur_datetime, args.activity_category, activity)
-    sql_cursor.execute(sql,vals)
-    sql_db.commit() 
+        vals=(args.user, cur_datetime, args.activity_category, activity)
+        sql_cursor.execute(sql,vals)
+        sql_db.commit() 
     
     if args.outf is None:
         print('specified category:'+args.activity_category)
-        print('selected activity:'+str(activity))
-        if activity_annotation is not None: 
-            print('selected activity metadata'+str([i for i in activity_annotation.values]))
-        print('options:'+str(choices))
+        for activity in activities:
+            print(activity)
     else:
         outf=open(args.outf,'w')
         outf.write('specified category:'+args.activity_category+'\n')
-        outf.write('selected activity:'+activity+'\n')
-        if activity_annotation is not None:
-            outf.write('selected activity metadata:'+ str([i for i in activity_annotation.values])+'\n')
-        outf.write('options:'+'\t'.join(choices)+'\n')
+        for activity in activities:
+            outf.write(activity+'\n')
         outf.close()
        
 def main():
@@ -110,11 +142,11 @@ def main():
 
     if args.activity_category=="skip":
         #user selected to skip exercise
-        make_output('skip',None,'skip',sql_cursor,sql_db, args)
+        make_output(['skip']*args.n,sql_cursor,sql_db, args)
     else:
         #recommend an exercise
-        recommendation,recommendation_annotation, choices=generate_recommendation(sql_cursor,sql_db,args)
-        make_output(recommendation,recommendation_annotation,choices,sql_cursor,sql_db, args)
+        recommendations=generate_recommendation(sql_cursor,sql_db,args)
+        make_output(recommendations,sql_cursor,sql_db, args)
 
     #close mysql connection
     sql_cursor.close()
