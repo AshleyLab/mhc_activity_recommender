@@ -8,8 +8,8 @@ mysql_db='mhc_rec'
 
 
 #math of exercise category to activity metadata 
-metadata={'lifestyle':'activities/lifestyle.tsv',
-          'training':'activities/training.tsv',
+metadata={'lifestyle':'activities/PhysicalActivity.tsv',
+          'training':'activities/EnduranceSessions.tsv',
           'video':'activities/ExerciseVideoLinks.tsv'}
 
 def open_mysql_connection():
@@ -22,3 +22,9 @@ def open_mysql_connection():
     
     sql_cursor = sql_db.cursor()
     return sql_db, sql_cursor
+
+
+def create_activity_hash():
+    '''
+    hash the activity title to a unique, reproducible value stored in the database. 
+    '''

@@ -14,9 +14,9 @@ def parse_args():
     parser.add_argument("--activity_category",choices=["lifestyle","training","video","skip"]) 
     parser.add_argument("--feature_ranks",default=None, help="tsv file with feature name in column 1, feature value in column 2,  rank 0 to 10 in column 3, or -1 to exclude")
     parser.add_argument("--outf",default=None,help="if None, print to console, else write string of recommended activities to a file")
-    parser.add_argument("--n",type=int,default=1,help="Number of activities to recommend")
-    parser.add_argument("--with_replacement",default=False,action="store_true",help="allow the same activitiy to be recommended multiple times")
-    parser.add_argument("--prob_duplicate",type=float,default=0.5,help="tune this parameter from 0 to 1 to control how many activities are reported multiple times; 0 = many repeats; 1 = no repeats")
+    parser.add_argument("--n",type=int,default=3,help="Number of activities to recommend")
+    parser.add_argument("--with_replacement",default=True,action="store_true",help="allow the same activitiy to be recommended multiple times")
+    parser.add_argument("--prob_duplicate",type=float,default=0.3,help="tune this parameter from 0 to 1 to control how many activities are reported multiple times; 0 = many repeats; 1 = no repeats")
     return parser.parse_args() 
 
 

@@ -7,7 +7,8 @@ def parse_args():
     parser.add_argument("--user") 
     parser.add_argument("--date") 
     parser.add_argument("--activity_category")
-    parser.add_argument("--rating",type=int,help="scale of 0 (bad) to 10 (good)") 
+    parser.add_argument("--rating",type=int, choices=[-1,0,1])
+    parser.add_argument("--exertion",type=int,choices=range(6,21))
     return parser.parse_args() 
 
 
