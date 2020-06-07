@@ -30,6 +30,8 @@ def match_novelty(desired_val, feature, activities_df, sql_cursor,user):
             hits.append(cur_activity)
     return hits
 
+def match_string(desired_val,allowed_values ):
+    pass
 
 matchers={}
 matchers['Duration']=match_continuous_feature
@@ -40,3 +42,5 @@ matchers['GroupVIndividual']=match_categorical_feature
 matchers['InstructorGender']=match_categorical_feature
 matchers['ClassGender']=match_categorical_feature
 matchers['Novelty']=match_novelty
+matchers['Instructor']=match_string
+matchers['Discipline']=match_categorical_feature

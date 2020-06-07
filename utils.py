@@ -1,4 +1,5 @@
 import mysql.connector
+import argparse
 
 #cache mysql credentials here -- this is very bad and not secure, but nothing in the demo db is valuable
 mysql_host='localhost'
@@ -24,7 +25,18 @@ def open_mysql_connection():
     return sql_db, sql_cursor
 
 
-def create_activity_hash():
+def create_activity_hash(to_hash):
     '''
     hash the activity title to a unique, reproducible value stored in the database. 
     '''
+    return hash(str(to_hash))
+
+def args_object_from_args_dict(args_dict):
+    '''
+    pass in arguments as a dictionary in python
+    '''
+    args_object=argparse.Namespace()
+    for key in args_dict:
+        vars(args_object)[key]=args_dict[key]
+    return args_object
+
