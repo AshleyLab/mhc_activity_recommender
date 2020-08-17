@@ -54,19 +54,20 @@ mysql> show tables;
 +-------------------+
 1 row in set (0.00 sec)
 
-mysql> describe activities 
-    -> ; 
-+----------+---------------+------+-----+---------+-------+
+mysql> describe activities; 
++-------------------+---------------+------+-----+---------+-------+
 | Field             | Type          | Null | Key | Default | Extra |
-+----------+---------------+------+-----+---------+-------+
++-------------------+---------------+------+-----+---------+-------+
 | user              | varchar(100)  | YES  |     | NULL    |       |
 | date              | datetime      | YES  |     | NULL    |       |
-| activity_category |varchar(1000)  | YES  |     | NULL    |       |
-| activity 	    | varchar(1000) | YES  |     | NULL    |       |
-| rank     	    | tinyint(4)    | YES  |     | NULL    |       |
-+----------+---------------+------+-----+---------+-------+
-4 rows in set (0.00 sec)
-
+| activity_category | varchar(1000) | YES  |     | NULL    |       |
+| activity_hash     | varchar(1000) | NO   |     | NULL    |       |
+| rating            | tinyint(4)    | YES  |     | NULL    |       |
+| fitness           | int(11)       | YES  |     | NULL    |       |
+| exertion          | int(11)       | YES  |     | NULL    |       |
+| attempted         | tinyint(1)    | YES  |     | NULL    |       |
++-------------------+---------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
 
 mysql> select * from activities; 
 +----------+---------------------+-------------------+------------------------------+------+

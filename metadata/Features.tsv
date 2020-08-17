@@ -8,3 +8,7 @@ ClassGender
 Novelty
 Discipline
 Instructor
+MinFitnessLevel
+MaxFitnessLevel
+TargetExertionMin
+TargetExertionMax

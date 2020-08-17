@@ -1,17 +1,17 @@
-Duration	Activity	Exclusion criteria
-n/a 	Take the stairs. Whenever possible during the day, take the stairs instead of escalators and elevators	walking problems, knee problems
-n/a	Move every hour. Take a 2 walk, for example around the office every hour
-60	Garderning. Tend to your garden for an hour.
-n/a	Step count challenge. For example https://www.stepjockey.com/mobile-app
-60	House work, that requires movement for example vacuuming, mopping the floor, cleaning, washing windows
-60	Dancing, any kind will work!
-60	Outdoor work, for example move the lawn, rake leaves
-40	Ride your bike (or walk) to work
-60	Play with children - any type of physical play
-60	Wash and vacuum your car by hand
-30	Walk to the corner shop and carry home the groceries
-20	Walk to the bus stop or train station, and catch public transport to work.
-60	Have a work meeting as a walking meeting or at least a standing meeting.
-15	Use at least half of your lunch break for a brisk walk, even if it is only 10–15 utes.
-5	When you need to talk to a colleague, don’t use the phone or internal email – get up from your desk and walk over to them.
-10	Replace a coffee break with a brisk 10-minute walk. Ask a friend to go with you.
+Duration	Activity	Exclusion criteria	MinFitnessLevel	MaxFitnessLevel	TargetExertionMin	TargetExertionMax
+NA 	Take the stairs. Whenever possible during the day, take the stairs instead of escalators and elevators	walking, knee	1	5	6	20
+NA	Move every hour. Take a 2 walk, for example around the office every hour		1	5	6	20
+60	Garderning. Tend to your garden for an hour.		1	5	6	20
+NA	Step count challenge. For example https://www.stepjockey.com/mobile-app		1	5	6	20
+60	House work, that requires movement for example vacuuming, mopping the floor, cleaning, washing windows		1	5	6	20
+60	Dancing, any kind will work!		1	5	6	20
+60	Outdoor work, for example move the lawn, rake leaves		1	5	6	20
+40	Ride your bike (or walk) to work		1	5	6	20
+60	Play with children - any type of physical play		1	5	6	20
+60	Wash and vacuum your car by hand		1	5	6	20
+30	Walk to the corner shop and carry home the groceries		1	5	6	20
+20	Walk to the bus stop or train station, and catch public transport to work.		1	5	6	20
+60	Have a work meeting as a walking meeting or at least a standing meeting.		1	5	6	20
+15	Use at least half of your lunch break for a brisk walk, even if it is only 10–15 utes.		1	5	6	20
+5	When you need to talk to a colleague, don't use the phone or internal email, but get up from your desk and walk over to them.		1	5	6	20
+10	Replace a coffee break with a brisk 10-minute walk. Ask a friend to go with you.		1	5	6	20
