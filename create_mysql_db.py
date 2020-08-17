@@ -92,7 +92,7 @@ def create_user_preferences_table(sql_cursor):
     except:
         pass 
 
-    query="CREATE TABLE user_preferences (activity_hash VARCHAR(255), activity_name VARCHAR(255), activity_category VARCHAR(255), feature VARCHAR(255), feature_value VARCHAR(255))"
+    query="CREATE TABLE user_preferences (user VARCHAR(255), feature VARCHAR(255), value VARCHAR(255), importance INT);"
     sql_cursor.execute(query)
     
 def create_user_fitness_table(sql_cursor):
