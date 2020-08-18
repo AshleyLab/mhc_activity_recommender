@@ -1,5 +1,6 @@
 import warnings
 warnings.simplefilter(action='ignore', category=Warning)
+import config
 import argparse
 from collections import OrderedDict 
 from utils import *
@@ -17,7 +18,6 @@ def parse_args():
     parser.add_argument("-activity_category",choices=["lifestyle","training","videos","skip"])
     
     #optional (with preset defaults)
-    parser.add_argument("--date",default=None,help="format:2020-03-07 15:17:00") 
     parser.add_argument("--outf",default=None,help="if None, print to console, else write string of recommended activities to a file")
     parser.add_argument("--n",type=int,default=3,help="Number of activities to recommend")
     return parser.parse_args() 
@@ -121,7 +121,7 @@ def generate_recommendation(sql_cursor,sql_db,args):
     for index,row in user_prefs.iterrows():
         cur_feature=row['Feature']
         cur_feature_value=row['Value']
-        if str(cur_feature_value) =="nan":
+        if str(cur_feature_value) in ["NA","nan"]:
             if cur_feature!="Novelty":
                 continue 
         cur_feature_importance=int(row['Importance'])
@@ -184,7 +184,7 @@ def main():
 
     if args.activity_category=="skip":
         #user selected to skip exercise
-        make_output(['skip']*args.n,sql_cursor,sql_db, args)
+        make_output(['skip']*args.n,['skip']*args.n,sql_cursor,sql_db, args)
     else:
         #recommend an exercise
         recommended_activity_hashes, recommended_activity_names=generate_recommendation(sql_cursor,sql_db,args)
