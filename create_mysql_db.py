@@ -148,7 +148,7 @@ def create_activity_completion_table(sql_cursor):
         sql_cursor.execute("DROP TABLE activity_completion;")
     except:
         pass 
-    query="CREATE TABLE activity_completion (user VARCHAR(255), date DATE, activity_hash DOUBLE, rating INT, exertion INT, attempted BOOL)"
+    query="CREATE TABLE activity_completion (user VARCHAR(255), date DATE, activity_hash VARCHAR(255), activity_category VARCHAR(255), rating INT, exertion INT, attempted BOOL)"
     sql_cursor.execute(query) 
     
 def create_and_populate_tables():

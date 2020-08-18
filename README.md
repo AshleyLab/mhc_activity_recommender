@@ -1,79 +1,170 @@
 # mhc_activity_recommender
 recommender system of activities for users in MHC 3.0 coaching studies 
 
-Example:
-```
-./recommend.sh 
-specified category:skip
-selected activity:skip
-options:skip
+Recommender diagram: https://app.lucidchart.com/invitations/accept/eedbfd98-0913-4939-9364-426563929ba2
 
----------------------------------------------------------
-                  0         1   2
-0          Duration        30  10
-1          Category       Abs   9
-2         Intensity      High  10
-3             Focus  Strength   6
-4  GroupVIndividual     Group   4
-5  InstructorGender       M/F   3
-6       ClassGender       M/F   0
-7           Novelty       NaN  10
-specified category:video
-selected activity:https://youtu.be/CBWQGb4LyAM
-selected activity metadata[array(['https://youtu.be/CBWQGb4LyAM', 30, 'Cardio & HIIT Workout',
-       'High', 'cardio/strength', 'Group', 'F', 'F', 'Popsugar fitness',
-       'Charlee Atkins', nan], dtype=object), array(['https://youtu.be/CBWQGb4LyAM', 30,
-       'No-Equipment Cardio & HIIT Workout', 'High', 'cardio',
-       'Small group', 'F', 'F', 'POPSUGAR Fitness', 'Charlee Atkins',
-       'No'], dtype=object)]
-options:['https://youtu.be/CBWQGb4LyAM']
+
+## 1) Verify that the configuration & activity source files are updated.
+
+`config.py` contains configuration details for:  
+a) connection to MySQLDB  
+b) paths to the PhysicalActivity.tsv, EnduranceSessions.tsv, ExerciseVideoLinks.tsv exercise metadata  
+c) Path to list of features users can modify preferences for (i.e.  metadata/ModifiableFeatures.tsv)  
+d) Fitness thresholds (min=1, max=5, default =3)  
+
+## 2) Set up the MySQL database backend
+
+execute:
 
 ```
-Example for rating an activity
-```
-./rate.sh 
-('testuser', datetime.datetime(2020, 3, 7, 15, 21), 'skip', 'skip', 1)
-('testuser', datetime.datetime(2020, 3, 6, 15, 21), 'video', 'https://youtu.be/CBWQGb4LyAM', 1)
+python create_mysql_db.py
 ```
 
-Video activities: 
-https://docs.google.com/spreadsheets/d/1FEOD2jktd0L3D9_rPbxHPAjDywnwO0z8s5oLYMHgE6E/edit#gid=0
+This sets up the MySQL database (mhc_rec), creates (overwrites!) the tables, and populates the "activity_features" and "activity_metadata" tables:
 
 ```
-mysql credentials for example database
-user=root
-password=password
-
-mysql> use mhc_rec
-Database changed
 mysql> show tables; 
-+-------------------+
-| Tables_in_mhc_rec |
-+-------------------+
-| activities        |
-+-------------------+
-1 row in set (0.00 sec)
++---------------------+
+| Tables_in_mhc_rec   |
++---------------------+
+| activity_completion |
+| activity_features   |
+| activity_metadata   |
+| user_fitness        |
+| user_preferences    |
++---------------------+
+5 rows in set (0.00 sec)
 
-mysql> describe activities; 
-+-------------------+---------------+------+-----+---------+-------+
-| Field             | Type          | Null | Key | Default | Extra |
-+-------------------+---------------+------+-----+---------+-------+
-| user              | varchar(100)  | YES  |     | NULL    |       |
-| date              | datetime      | YES  |     | NULL    |       |
-| activity_category | varchar(1000) | YES  |     | NULL    |       |
-| activity_hash     | varchar(1000) | NO   |     | NULL    |       |
-| rating            | tinyint(4)    | YES  |     | NULL    |       |
-| fitness           | int(11)       | YES  |     | NULL    |       |
-| exertion          | int(11)       | YES  |     | NULL    |       |
-| attempted         | tinyint(1)    | YES  |     | NULL    |       |
-+-------------------+---------------+------+-----+---------+-------+
-8 rows in set (0.00 sec)
+mysql> describe activity_metadata; 
++---------------------+--------------+------+-----+---------+-------+
+| Field               | Type         | Null | Key | Default | Extra |
++---------------------+--------------+------+-----+---------+-------+
+| activity_hash       | varchar(255) | YES  |     | NULL    |       |
+| activity_name       | varchar(255) | YES  |     | NULL    |       |
+| activity_category   | varchar(255) | YES  |     | NULL    |       |
+| min_fitness_level   | int(11)      | YES  |     | NULL    |       |
+| max_fitness_level   | int(11)      | YES  |     | NULL    |       |
+| target_exertion_min | int(11)      | YES  |     | NULL    |       |
+| target_exertion_max | int(11)      | YES  |     | NULL    |       |
++---------------------+--------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
 
-mysql> select * from activities; 
-+----------+---------------------+-------------------+------------------------------+------+
-| user     | date                | activity_category | activity                     | rank |
-+----------+---------------------+-------------------+------------------------------+------+
-| testuser | 2020-03-06 15:21:00 | video             | https://youtu.be/CBWQGb4LyAM |    1 |
-| testuser | 2020-03-07 15:21:00 | skip              | skip                         |    1 |
+mysql> describe activity_features; 
++---------------+--------------+------+-----+---------+-------+
+| Field         | Type         | Null | Key | Default | Extra |
++---------------+--------------+------+-----+---------+-------+
+| activity_hash | varchar(255) | YES  |     | NULL    |       |
+| feature       | varchar(255) | YES  |     | NULL    |       |
+| feature_value | varchar(255) | YES  |     | NULL    |       |
++---------------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> describe activity_completion; 
++-------------------+--------------+------+-----+---------+-------+
+| Field             | Type         | Null | Key | Default | Extra |
++-------------------+--------------+------+-----+---------+-------+
+| user              | varchar(255) | YES  |     | NULL    |       |
+| date              | date         | YES  |     | NULL    |       |
+| activity_hash     | varchar(255) | YES  |     | NULL    |       |
+| activity_category | varchar(255) | YES  |     | NULL    |       |
+| rating            | int(11)      | YES  |     | NULL    |       |
+| exertion          | int(11)      | YES  |     | NULL    |       |
+| attempted         | tinyint(1)   | YES  |     | NULL    |       |
++-------------------+--------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> describe user_fitness; 
++---------------+--------------+------+-----+---------+-------+
+| Field         | Type         | Null | Key | Default | Extra |
++---------------+--------------+------+-----+---------+-------+
+| user          | varchar(255) | YES  |     | NULL    |       |
+| date          | date         | YES  |     | NULL    |       |
+| fitness_score | double       | YES  |     | NULL    |       |
++---------------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> describe user_preferences; 
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| user       | varchar(255) | YES  |     | NULL    |       |
+| feature    | varchar(255) | YES  |     | NULL    |       |
+| value      | varchar(255) | YES  |     | NULL    |       |
+| importance | int(11)      | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+```
+
+
+## 3) Populate user preferences & fitness levels
 
 ```
+python update_user.py --help 
+usage: update_user.py [-h] [-user USER] [-user_pref_file USER_PREF_FILE]
+                      [--user_fitness_level {1,2,3,4,5}]
+
+updated user information
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -user USER            unique user identifier
+  -user_pref_file USER_PREF_FILE
+                        tab-separated file with columns Feature, Value,
+                        Importance
+  --user_fitness_level {1,2,3,4,5}
+                        fitness level 1 (lowest) - 5 (highest)
+```
+
+Execute the script `update_user.sh` for an example of the input values 
+
+## 4) Generate activity recommendations
+
+```
+ python recommend.py --help 
+usage: recommend.py [-h] [-user USER]
+                    [-activity_category {lifestyle,training,videos,skip}]
+                    [--date DATE] [--outf OUTF] [--n N]
+
+recommend activity
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -user USER
+  -activity_category {lifestyle,training,videos,skip}
+  --date DATE           format:2020-03-07 15:17:00
+  --outf OUTF           if None, print to console, else write string of
+                        recommended activities to a file
+  --n N                 Number of activities to recommend
+```
+
+Execute `recommend.sh` as an example
+
+## 5) Rate the activities and adjust user's fitness levels
+
+```
+python rate.py --help 
+usage: rate.py [-h] [-user USER] [-activity_hash ACTIVITY_HASH]
+               [-activity_category {lifestyle,training,videos,skip}]
+               [-rating {-1,0,1}]
+               [-exertion {6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}]
+               [-attempted {True,False}]
+               [--exertion_mismatch_thresh_to_adjust_fitness EXERTION_MISMATCH_THRESH_TO_ADJUST_FITNESS]
+
+rank an exercise activity -1,0,1
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -user USER
+  -activity_hash ACTIVITY_HASH
+  -activity_category {lifestyle,training,videos,skip}
+  -rating {-1,0,1}
+  -exertion {6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
+  -attempted {True,False}
+  --exertion_mismatch_thresh_to_adjust_fitness EXERTION_MISMATCH_THRESH_TO_ADJUST_FITNESS
+                        if user's reported exertion differs from the expected
+                        exertion for the ativity by this much (or greater),
+                        adjust the user's fitness score
+
+```
+Execute `rate.sh` as an example.
+

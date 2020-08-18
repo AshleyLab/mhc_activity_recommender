@@ -1,14 +1,12 @@
 python rate.py \
-       --user testuser \
-       --date "2020-03-07 15:21:00" \
-       --activity_category skip \
-       --rating 1 \
-       --exertion 6
+       -user testuser \
+       -activity_category skip
+       
 python rate.py \
-       --user testuser \
-       --date "2020-03-06 15:21:00" \
-       --activity_category video \
-       --rating 1 \
-       --exertion 20 \
-       --attempted True
+       -user testuser \
+       -activity_category videos \
+       -activity_hash 5520841793757564839 \
+       -rating 1 \
+       -exertion 20 \
+       -attempted True
 

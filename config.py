@@ -10,5 +10,10 @@ metadata={'lifestyle':'activities/PhysicalActivity.tsv',
           'video':'activities/ExerciseVideoLinks.tsv'}
 
 #list of features to use
-nonmodifiable_feature_file='metadata/NonmodifiableFeatures.tsv'
 modifiable_feature_file='metadata/ModifiableFeatures.tsv'
+
+
+#fitness thresholds
+max_fitness_score=5
+min_fitness_score=1
+default_fitness_score=3
