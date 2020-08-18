@@ -49,3 +49,4 @@ matchers['ClassGender']=match_categorical_feature
 matchers['Novelty']=match_novelty
 matchers['Instructor']=match_string
 matchers['Discipline']=match_categorical_feature
+matchers['Exclusion']=match_string

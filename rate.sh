@@ -5,7 +5,7 @@ python rate.py \
 python rate.py \
        -user testuser \
        -activity_category videos \
-       -activity_hash 5520841793757564839 \
+       -activity_hash 3228945113131736739 \
        -rating 1 \
        -exertion 20 \
        -attempted True

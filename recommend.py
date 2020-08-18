@@ -128,6 +128,11 @@ def generate_recommendation(sql_cursor,sql_db,args):
         activity_cur_feature_vals=activity_feature_vals[activity_feature_vals['Feature']==cur_feature]
         hits=matchers[cur_feature](cur_feature_value, cur_feature, activity_cur_feature_vals, sql_cursor, args.user)
 
+        if cur_feature=='Exclusion':
+            #remove the activities where the exclusion criteria are met 
+            exclude[hit]=1
+            continue
+        
         for hit in hits:
             if cur_feature_importance>0:
                 options[hit]+=cur_feature_importance
