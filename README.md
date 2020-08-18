@@ -123,7 +123,7 @@ Execute the script `update_user.sh` for an example of the input values
  python recommend.py --help 
 usage: recommend.py [-h] [-user USER]
                     [-activity_category {lifestyle,training,videos,skip}]
-                    [--date DATE] [--outf OUTF] [--n N]
+                    [--outf OUTF] [--n N]
 
 recommend activity
 
@@ -131,7 +131,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -user USER
   -activity_category {lifestyle,training,videos,skip}
-  --date DATE           format:2020-03-07 15:17:00
   --outf OUTF           if None, print to console, else write string of
                         recommended activities to a file
   --n N                 Number of activities to recommend
