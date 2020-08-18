@@ -1,8 +1,8 @@
 '''
 update user exercise preferences; if user not in database, insert them
 '''
-from datetime import datetime 
-from config import *
+from datetime import datetime
+import config
 from utils import *
 import argparse
 import mysql.connector
@@ -15,7 +15,25 @@ def parse_args():
     parser.add_argument("--user_fitness_level",type=int,choices=[1,2,3,4,5],default=None,help="fitness level 1 (lowest) - 5 (highest)")
     return parser.parse_args()
 
+def generate_default_preferences(sql_cursor,user):
+    #generate the default preference set for the user (these will be overwritten/updated by user's customized preference list where provided)
+    features=open(config.modifiable_feature_file,'r').read().strip().split('\n')
+    for feature in features:
+        query="INSERT into user_preferences (user, feature, value, importance) VALUES (%s, %s, %s, %s);"
+        vals=(user,feature,'NA',0)
+        sql_cursor.execute(query,vals)
+        
+    
+
 def update_user_preferences(sql_cursor,user,user_prefs):
+    #if the user is not currently in the table, start with random feature preferences
+    query="SELECT * from user_preferences where user=%s;";
+    vals=(user,)
+    sql_cursor.execute(query,vals)
+    result=[i for i in sql_cursor.fetchall()]
+    if len(result)==0:
+        generate_default_preferences(sql_cursor,user)
+        
     for index,row in user_prefs.iterrows():
         cur_feature=row['Feature']
         cur_feature_value=row['Value']
@@ -67,7 +85,11 @@ def main():
     #if fitness level is provided, update  it 
     if args.user_fitness_level is not None:
         update_user_fitness(sql_cursor,args.user,args.user_fitness_level)
-    
+
+    sql_db.commit()
+    sql_db.close()
+    sql_cursor.close()
+
 
 if __name__=="__main__":
     main()

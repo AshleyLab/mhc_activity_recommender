@@ -1,4 +1,4 @@
-Discipline	Duration	Intensity	Description	MinFitnessLevel	MaxFitnessLevel	TargetExertionMin	TargetExertionMax
+Discipline	Duration	Intensity	Description	min_fitness_level	max_fitness_level	target_exertion_min	target_exertion_max
 Running	30	High	4 x 4 min with 2 min rest	1	5	6	20
 Cycling	30	High	7 x 30 sec all-out with 3 min rest	4	5	6	20
 Swimming	30	High	5 x 30 sec all-out with 3 min rest	3	4	6	20

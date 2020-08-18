@@ -10,4 +10,5 @@ metadata={'lifestyle':'activities/PhysicalActivity.tsv',
           'video':'activities/ExerciseVideoLinks.tsv'}
 
 #list of features to use
-feature_file='metadata/Features.tsv'
+nonmodifiable_feature_file='metadata/NonmodifiableFeatures.tsv'
+modifiable_feature_file='metadata/ModifiableFeatures.tsv'
