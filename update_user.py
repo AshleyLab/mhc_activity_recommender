@@ -66,30 +66,34 @@ def update_user_fitness(sql_cursor,user,user_fitness_level):
     print("updated user fitness")
     return
 
-
-def main():
-    args=parse_args()
-
-    #connect to the db
-    sql_db,sql_cursor=open_mysql_connection()
-
-    #load the user feature preferences 
-    user_prefs=pd.read_csv(args.user_pref_file,header=0,sep='\t')
+def load_user_prefs(user_pref_file):
+    user_prefs = pd.read_csv(user_pref_file,header=0,sep='\t')
     assert 'Feature' in user_prefs.columns
     assert 'Value' in user_prefs.columns
     assert 'Importance' in user_prefs.columns
+    return user_prefs
+
+def update_user_main_helper(user, user_pref_file, user_fitness_level):
+    #connect to the db
+    sql_db,sql_cursor=open_mysql_connection()
+
+    #load the user feature preferences
+    user_prefs=load_user_prefs(user_pref_file)
 
     #update user feature preferences
-    update_user_preferences(sql_cursor,args.user,user_prefs)
+    update_user_preferences(sql_cursor, user, user_prefs)
 
-    #if fitness level is provided, update  it 
-    if args.user_fitness_level is not None:
-        update_user_fitness(sql_cursor,args.user,args.user_fitness_level)
+    #if fitness level is provided, update  it
+    if user_fitness_level is not None:
+        update_user_fitness(sql_cursor, user, user_fitness_level)
 
     sql_db.commit()
     sql_db.close()
     sql_cursor.close()
 
+def main():
+    args=parse_args()
+    update_user_main_helper(args.user, args.user_pref_file, args.user_fitness_level)
 
 if __name__=="__main__":
     main()

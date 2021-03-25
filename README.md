@@ -3,6 +3,10 @@ recommender system of activities for users in MHC 3.0 coaching studies
 
 Recommender diagram: https://app.lucidchart.com/invitations/accept/eedbfd98-0913-4939-9364-426563929ba2
 
+## 0) Pre-requesits
+
+* Install [MySql](https://dev.mysql.com/downloads/mysql/)
+* Install python libraries ie `pip install mysql-connector-python` (TODO: Requirements.txt)
 
 ## 1) Verify that the configuration & activity source files are updated.
 

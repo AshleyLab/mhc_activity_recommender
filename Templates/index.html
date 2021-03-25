@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>Activity Recomender</title>
+  </head>
+  <body>
+    <div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    </div>
+    <div>
+      <h1>Hello</h1>
+      <p><a href="/init">Create db</a></p>
+      <p><a href="/pref">Set Features</a></p>
+      <p><a href="/recommendations">Get Recommendations</a></p>
+    </div>
+  </body>
+</html>

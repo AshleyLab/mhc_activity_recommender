@@ -11,6 +11,6 @@ python recommend.py \
 
 #recommend a random series of activities, with replacement 
 python recommend.py \
-       -user testuser2\
+       -user testuser\
        -activity_category videos \
        --n 3
