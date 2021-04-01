@@ -28,8 +28,9 @@ def recommendations():
     #recommendations_lifestyle = recomend_main_helper("testuser", "lifestyle", 3) # Does not run
     #recommendations_training = recomend_main_helper("testuser", "training", 3)
     recommendations_video = recomend_main_helper("testuser", "videos", 3)
-    flash(set(recommendations_video))
-    return render_template('index.html')
+    #flash(set(recommendations_video))
+    print (recommendations_video)
+    return render_template('index.html', recommendations=recommendations_video)
 
 if __name__ == "__main__":
     # Quick test configuration. Please use proper Flask configuration options

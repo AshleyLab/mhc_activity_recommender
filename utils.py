@@ -30,3 +30,5 @@ def args_object_from_args_dict(args_dict):
         vars(args_object)[key]=args_dict[key]
     return args_object
 
+def embedifyYoutubeUrl(s):
+    return "https://www.youtube.com/embed/%s" % s.split("/")[-1]

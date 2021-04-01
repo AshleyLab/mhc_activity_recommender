@@ -194,7 +194,7 @@ def recomend_main_helper(user, activity_category, n, outf=None):
     #close mysql connection
     sql_cursor.close()
     sql_db.close()
-    return zip(recommended_activity_hashes, recommended_activity_names)
+    return [{"hash":x[0], "url":embedifyYoutubeUrl(x[1])} for x in zip(recommended_activity_hashes, recommended_activity_names)]
 
 def main():
     #read program arguments
