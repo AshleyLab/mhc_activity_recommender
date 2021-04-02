@@ -29,4 +29,16 @@ def args_object_from_args_dict(args_dict):
     return args_object
 
 def embedifyYoutubeUrl(s):
-    return "https://www.youtube.com/embed/%s" % s.split("/")[-1]
+    """ 
+    :param s: url of youtube video either in format https://www.youtube.com/watch?v=ID or https://youtu.be/Q9MnfvJAg5s
+    :return: url in format for embedding video
+
+    This should probably be moved to a Flask function at some point
+    """
+    embed_url = "https://www.youtube.com/embed/%s"
+    if "=" in s:
+        youtube_id =  s.split("=")[-1]
+    else:
+        youtube_id =  s.split("/")[-1]
+    return embed_url % youtube_id
+
