@@ -75,13 +75,11 @@ def pref():
 @app.route("/recommendations")
 def recommendations():
     #recommendations_lifestyle = recomend_main_helper("testuser", "lifestyle", 3) # Does not run
-    #recommendations_training = recomend_main_helper("testuser", "training", 3)
+    #recommendations_training = recomend_main_helper("testuser", "training", 3) # Did not test
     recommendations_video = recomend_main_helper("testuser", "videos", 3)
     for i, data in enumerate(recommendations_video):
         data['ratingForm']= RatingForm()
         recommendations_video[i]=data
-    #flash(set(recommendations_video))
-    print (recommendations_video)
     return render_template('recommendations.html', recommendations=recommendations_video)
 
 @app.route("/rate/<hash>/", methods=['GET', 'POST'])

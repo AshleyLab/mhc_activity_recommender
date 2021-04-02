@@ -28,6 +28,12 @@ def args_object_from_args_dict(args_dict):
         vars(args_object)[key]=args_dict[key]
     return args_object
 
+
+import requests
+def validVideoId(id):
+    r = requests.get("https://img.youtube.com/vi/%s/mqdefault.jpg" % id)
+    return (r.status_code == 200)
+
 def embedifyYoutubeUrl(s):
     """ 
     :param s: url of youtube video either in format https://www.youtube.com/watch?v=ID or https://youtu.be/Q9MnfvJAg5s
@@ -40,5 +46,6 @@ def embedifyYoutubeUrl(s):
         youtube_id =  s.split("=")[-1]
     else:
         youtube_id =  s.split("/")[-1]
+    if not validVideoId(youtube_id):
+        print("WARNING: Youtube id: %s is invalid" % youtube_id)
     return embed_url % youtube_id
-
