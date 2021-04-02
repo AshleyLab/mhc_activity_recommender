@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument("--exertion_mismatch_thresh_to_adjust_fitness",type=int,default=DEFAULT_EXERTION_MISMATCH_THERESH_TO_ADJUST_FITNESS,help="if user's reported exertion differs from the expected exertion for the ativity by this much (or greater), adjust the user's fitness score")
     return parser.parse_args() 
 
-def rate_main_helper(user, activity_hash, activity_category, rating, exertion, attempted,
+def rate_main_helper(user, activity_hash, activity_category, rating, exertion, attempted=True,
                      exertion_mismatch_thresh_to_adjust_fitness=DEFAULT_EXERTION_MISMATCH_THERESH_TO_ADJUST_FITNESS):
     #create mysql connection
     sql_db,sql_cursor =open_mysql_connection()

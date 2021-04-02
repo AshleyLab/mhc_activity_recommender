@@ -2,7 +2,6 @@ import mysql.connector
 import argparse
 from config import * 
 
-
 def open_mysql_connection():
     #values imported from utils.py
     sql_db = mysql.connector.connect(
@@ -13,7 +12,6 @@ def open_mysql_connection():
     
     sql_cursor = sql_db.cursor()
     return sql_db, sql_cursor
-
 
 def create_activity_hash(to_hash):
     '''
