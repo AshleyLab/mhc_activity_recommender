@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="my-3">
+    <h1>MHC Activity Recommender</h1>
+    <div>
+    {% if recommendations %}
+      <article class="my-3">
+        <h3>Recommendations</h3>
+        <div class="row  row-cols-1 row-cols-md-2 g-4">
+        {% for recommendation in recommendations %}
+          <div class="col">
+            <div class="card">
+               <iframe width="280" height="158"
+                    src="{{ recommendation.url }}"
+                  title="YouTube video player" frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+              <div class="card-body">
+                <h5 class="card-title">Recommendation {{ loop.index }}</h5>
+                <p class="card-text">Hash = {{recommendation.hash}}. <a href="{{ recommendation.url }}">link</a></p>
+                  <a href="{{ url_for('rate', hash = recommendation.hash ) }}" class="btn btn-primary">Add rating</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+      </article>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
