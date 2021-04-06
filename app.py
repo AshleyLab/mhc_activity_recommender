@@ -55,9 +55,10 @@ def index():
 
 @app.route("/init")
 def init():
+
     create_mysql_db.main()
     flash("DB Initalized")
-    return render_template('index.html')
+    return redirect(url_for('index'))
 #ALTERNATIVE - Should really convert more to SQLalchemy
 #@app.before_first_request
 #def before_first_request_func():
