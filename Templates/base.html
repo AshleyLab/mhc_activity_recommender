@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Bootstrap-Flask Demo Application</title>
+    <title>MyHeart Counts Activity Recommender</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
     {{ bootstrap.load_css() }}
     <style>
@@ -30,6 +30,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 {{ render_nav_item('index', 'Home', use_li=True) }}
+                {{ render_nav_item('init', 'Initalize db', use_li=True) }}
+                {{ render_nav_item('pref', 'Set prefrences', use_li=True) }}
                 <li class="nav-item"><a class="nav-link" href="https://bootstrap-flask.readthedocs.io/" target="_blank">Documentation</a></li>
                 <li class="nav-item"><a class="nav-link" href="https://getbootstrap.com/docs/4.5/getting-started/introduction/" target="_blank">Bootstrap Documentation</a></li>
                 <li class="nav-item"><a class="nav-link" href="https://github.com/greyli/bootstrap-flask" target="_blank">GitHub</a></li>

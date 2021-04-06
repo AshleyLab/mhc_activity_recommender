@@ -5,8 +5,8 @@ Recommender diagram: https://app.lucidchart.com/invitations/accept/eedbfd98-0913
 
 ## 0) Pre-requesits
 
-* Install [MySql](https://dev.mysql.com/downloads/mysql/)
-* Install python libraries ie `pip install mysql-connector-python` (TODO: Requirements.txt)
+* Install [MySql](https://dev.mysql.com/downloads/mysql/), start server
+* Install Python libraries ie `pip install -r requirements.txt`
 
 ## 1) Verify that the configuration & activity source files are updated.
 
@@ -16,7 +16,9 @@ b) paths to the PhysicalActivity.tsv, EnduranceSessions.tsv, ExerciseVideoLinks.
 c) Path to list of features users can modify preferences for (i.e.  metadata/ModifiableFeatures.tsv)  
 d) Fitness thresholds (min=1, max=5, default =3)  
 
-## 2) Set up the MySQL database backend
+## 2345) Use web interface OR
+Use web interface to initalize database, set preferences and run recomendations & rate. Run `python app.py` and go to http://127.0.0.1:5000/. 
+ ## 2b) Set up the MySQL database backend
 
 execute:
 
